@@ -1,5 +1,40 @@
 defmodule SyncPrimitives.CountDownLatch do
-  @moduledoc false
+  @moduledoc """
+  A CountDownLatch expects `count` calls to `count_down/2` before calls to
+  `await/2` can continue.
+
+  A CountDownLatch is initialized with a `count`.
+
+  `await/2` blocks until the current count reaches 0 due to invocations of the
+  `count_down/2` method, after which all blocked processes are unblocked.
+
+  Any subsequent invocations of `await/2` return immediately. This is a
+  one-shot phenomenon -- the count cannot be reset. If you need a version that
+  resets the count, consider using a `SyncPrimitives.CyclicBarrier`.
+
+  ## Example
+
+      iex> latch = SyncPrimitives.CountDownLatch.start(2, fn -> IO.puts("latch done") end)
+      {SyncPrimitives.CountDownLatch, #PID<0.227.0>}
+      iex> spawn_link(fn ->
+      ...>  IO.puts("before wait")
+      ...>  SyncPrimitives.CountDownLatch.await(latch)
+      ...>  IO.puts("after wait")
+      ...> end)
+      before wait
+      #PID<0.233.0>
+      iex> # nothing happens for a while
+      nil
+      iex> SyncPrimitives.CountDownLatch.count_down(latch)
+      :ok
+      iex> SyncPrimitives.CountDownLatch.count_down(latch)
+      latch done
+      after wait
+      :ok
+      iex> SyncPrimitives.CountDownLatch.stop(latch)
+      :ok
+  """
+
   require Record
 
   Record.defrecordp(:latch, __MODULE__, pid: nil)

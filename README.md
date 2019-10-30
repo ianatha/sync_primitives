@@ -63,3 +63,43 @@ Documentation can be found at [https://hexdocs.pm/sync_primitives](https://hexdo
     process 1, after wait
     process 2, after wait
     ```
+
+4. Remember to stop the barrier
+    ```elixir
+    SyncPrimitives.CyclicBarrier.stop(barrier)
+    ```
+
+## CountDownLatch Usage
+
+1. Start a `CountDownLatch`
+    ```elixir
+    latch = SyncPrimitives.CountDownLatch.start(2, fn -> IO.puts("latch done") end)
+    ```
+
+2. Start the process you wish to block until the CountDownLatch is released.
+    ```elixir
+    spawn_link(fn ->
+      IO.puts("before wait")
+      SyncPrimitives.CountDownLatch.await(latch)
+      IO.puts("after wait")
+    end)
+    ```
+
+3. Wait for a little bit to see that the process won't reach the "after wait" message.
+
+4. Countdown enough times for the latch to reach 0.
+    ```elixir
+    SyncPrimitives.CountDownLatch.count_down(latch)
+    SyncPrimitives.CountDownLatch.count_down(latch)
+    ```
+
+3. All of above will output:
+    ```
+    latch done
+    after wait
+    ```
+
+4. Remember to stop the latch!
+    ```
+    SyncPrimitives.CountDownLatch.stop(latch)
+    ```
