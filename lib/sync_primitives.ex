@@ -1,18 +1,6 @@
 defmodule SyncPrimitives do
   @moduledoc """
-  Documentation for SyncPrimitives.
+  SyncPrimitives offers a variety of synchronization primitives, such as
+  `SyncPrimitives.CyclicBarrier`.
   """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> SyncPrimitives.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
 end

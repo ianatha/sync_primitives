@@ -1,4 +1,4 @@
-# SyncPrimitives
+# sync_primitives for Elixir
 
 [![Apache License](https://img.shields.io/hexpm/l/sync_primitives)](LICENSE.md)
 [![Hex.pm](https://img.shields.io/hexpm/v/sync_primitives)](https://hex.pm/packages/sync_primitives)
@@ -6,12 +6,12 @@
 [![Build Status](https://travis-ci.org/ianatha/sync_primitives.svg?branch=master)](https://travis-ci.org/ianatha/sync_primitives)
 [![Coverage Status](https://coveralls.io/repos/github/ianatha/sync_primitives/badge.svg?branch=master)](https://coveralls.io/github/ianatha/sync_primitives?branch=master)
 
-**TODO: Add description**
+Synchronization Primitives for Elixir. Currently the only synchronization primitive implemented is:
+* CyclicBarrier
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `sync_primitives` to your list of dependencies in `mix.exs`:
+`sync_primitives` is available on [Hex](https://hex.pm/). Add `sync_primitives` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -19,7 +19,44 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/sync_primitives](https://hexdocs.pm/sync_primitives).
+Documentation can be found at [https://hexdocs.pm/sync_primitives](https://hexdocs.pm/sync_primitives).
 
+## CyclicBarrier Usage
+
+1. Start a `CyclicBarrier`
+    ```elixir
+    barrier = SyncPrimitives.CyclicBarrier.start(2, fn -> IO.puts("barrier action") end)
+    ```
+
+2. Start the processes you wish to synchronize through a CyclicBarrier.
+
+    1. The first process:
+        ```elixir
+        spawn_link(fn ->
+          IO.puts("process 1, before wait")
+          SyncPrimitives.CyclicBarrier.await(barrier)
+          IO.puts("process 1, after wait")
+        end)
+        ```
+
+
+    2. Wait for a little bit to see that `process 1` won't reach the "after wait" message.
+
+
+    3. Start the second process:
+        ```elixir
+        spawn_link(fn ->
+          IO.puts("process 2, before wait")
+          SyncPrimitives.CyclicBarrier.await(barrier)
+          IO.puts("process 2, after wait")
+        end)
+        ```
+
+3. All of above will output:
+    ```
+    process 1, before wait
+    process 2, before wait
+    barrier action
+    process 1, after wait
+    process 2, after wait
+    ```
