@@ -6,8 +6,11 @@
 [![Build Status](https://travis-ci.org/ianatha/sync_primitives.svg?branch=master)](https://travis-ci.org/ianatha/sync_primitives)
 [![Coverage Status](https://coveralls.io/repos/github/ianatha/sync_primitives/badge.svg?branch=master)](https://coveralls.io/github/ianatha/sync_primitives?branch=master)
 
-Synchronization Primitives for Elixir. Currently the only synchronization primitive implemented is:
-* CyclicBarrier
+Synchronization Primitives for Elixir, such as `CyclicBarrier` and `CountDownLatch`.
+
+These primitives allow you to synchronize multiple Elixir processes using
+higher-level abstractions than messages. I have found them  are very useful in
+testing agent-based and mutli-process Elixir apps.
 
 ## Installation
 
