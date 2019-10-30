@@ -84,6 +84,8 @@ defmodule SyncPrimitives.CyclicBarrierTest do
     barrier = CyclicBarrier.start(parties, barrier_action_fn(self()))
     assert CyclicBarrier.parties(barrier) == parties
     assert not CyclicBarrier.broken?(barrier)
+    CyclicBarrier.reset(barrier)
+    refute CyclicBarrier.broken?(barrier)
 
     CyclicBarrier.stop(barrier)
   end
@@ -205,6 +207,26 @@ defmodule SyncPrimitives.CyclicBarrierTest do
     end)
 
     refute CyclicBarrier.broken?(barrier), "barrier not must be broken"
+
+    CyclicBarrier.stop(barrier)
+  end
+
+  test "can't await on broken barrier" do
+    parties = 2
+
+    barrier = CyclicBarrier.start(parties, barrier_action_fn(self()))
+    timeout = 100
+
+    # use the barrier once
+    # launch 1 attendant -- this barrier will never be fulfilled
+    start_attendants(barrier, 1, timeout)
+    {1, _attendant_start, _procs_before, barrier_fulfilled, _attendant_end} = receive_n(1) |> hd
+
+    assert barrier_fulfilled == :broken, "barrier must have timed out"
+
+    assert CyclicBarrier.broken?(barrier)
+
+    assert CyclicBarrier.await(barrier) == :broken
 
     CyclicBarrier.stop(barrier)
   end
