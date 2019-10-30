@@ -29,20 +29,17 @@ defmodule SyncPrimitives.CountDownLatch do
     GenServer.call(pid, :count)
   end
 
-  @spec count_down(latch) :: :ok
-  def count_down(latch(pid: pid)) do
-    GenServer.call(pid, :count_down)
+  @spec count_down(latch, pos_integer) :: :ok
+  def count_down(latch(pid: pid), i \\ 1) when is_integer(i) and i > 0 do
+    GenServer.call(pid, {:count_down, i})
   end
 
-  @spec await(latch, :infinity | integer) :: :fulfilled | :broken
+  @spec await(latch, :infinity | integer) :: :ok | :timeout
   def await(latch(pid: pid), timeout \\ :infinity)
       when timeout === :infinity or is_integer(timeout) do
     case call(pid, :await, timeout) do
-      :fulfilled ->
-        :fulfilled
-
-      :broken ->
-        :broken
+      :ok ->
+        :ok
 
       :timeout ->
         :timeout

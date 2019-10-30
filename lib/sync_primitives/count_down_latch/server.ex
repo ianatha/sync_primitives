@@ -46,12 +46,12 @@ defmodule SyncPrimitives.CountDownLatch.Server do
 
   @impl true
   def handle_call(
-        :count_down,
+        {:count_down, i},
         _from,
         s = state(step: :waiting, count: count, action: action, q: q)
       ) do
     cond do
-      count == 1 ->
+      count == i ->
         done(q, action)
 
         {:reply, :ok, state(s, count: 0, q: :queue.new())}
@@ -60,7 +60,7 @@ defmodule SyncPrimitives.CountDownLatch.Server do
         {:reply, :error, s}
 
       true ->
-        {:reply, :ok, state(s, count: count - 1)}
+        {:reply, :ok, state(s, count: count - i)}
     end
   end
 
