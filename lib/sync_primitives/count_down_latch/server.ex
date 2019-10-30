@@ -22,11 +22,6 @@ defmodule SyncPrimitives.CountDownLatch.Server do
   end
 
   @impl true
-  def handle_call(:status, _, s = state(step: step)) do
-    {:reply, step, s}
-  end
-
-  @impl true
   def handle_call(
         :await,
         _from,

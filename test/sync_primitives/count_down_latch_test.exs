@@ -62,4 +62,43 @@ defmodule SyncPrimitives.CountDownLatchTest do
 
     CountDownLatch.stop(latch)
   end
+
+  test "CountDownLatch await times out" do
+    latch = CountDownLatch.start(2)
+
+    before_await = :os.system_time()
+    :timeout = CountDownLatch.await(latch, 100)
+    after_await = :os.system_time()
+
+    assert after_await - before_await / 1_000_000 > 100
+    assert CountDownLatch.count(latch) == 2
+
+    CountDownLatch.count_down(latch)
+
+    assert CountDownLatch.count(latch) == 1
+    :timeout = CountDownLatch.await(latch, 100)
+
+    CountDownLatch.stop(latch)
+  end
+
+  test "CountDownLatch runs actions when at 0" do
+    tester = self()
+
+    latch = CountDownLatch.start(2, fn ->
+      send(tester, {:latch_released, :os.system_time()})
+    end)
+
+    CountDownLatch.count_down(latch)
+
+    latch_released_after = :os.system_time()
+
+    CountDownLatch.count_down(latch)
+
+    receive do
+      {:latch_released, at} ->
+        assert at > latch_released_after
+    end
+
+    CountDownLatch.stop(latch)
+  end
 end
