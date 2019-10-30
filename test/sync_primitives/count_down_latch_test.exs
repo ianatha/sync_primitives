@@ -22,26 +22,4 @@ defmodule SyncPrimitives.CountDownLatchTest do
 
     CountDownLatch.stop(latch)
   end
-
-  test "CountDownLatch counts down" do
-    latch = CountDownLatch.start(2)
-
-    spawn(fn ->
-      CountDownLatch.await(latch)
-      IO.puts("done!!")
-    end)
-
-    assert CountDownLatch.alive?(latch)
-    assert CountDownLatch.count(latch) == 2
-
-    CountDownLatch.count_down(latch)
-    assert CountDownLatch.count(latch) == 1
-
-    CountDownLatch.count_down(latch)
-    assert CountDownLatch.count(latch) == 0
-
-    assert CountDownLatch.count_down(latch) == :error
-
-    CountDownLatch.stop(latch)
-  end
 end
