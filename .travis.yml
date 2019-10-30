@@ -1,0 +1,16 @@
+---
+language: elixir
+elixir:
+  - 1.7.4
+otp_release:
+  - 21.0
+
+script:
+  - mix credo
+  - mix coveralls.travis
+  - MIX_ENV=test mix compile && mix test
+
+cache:
+  directories:
+    - .mix
+    - _build
