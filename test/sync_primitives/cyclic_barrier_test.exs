@@ -76,10 +76,10 @@ defmodule SyncPrimitives.CyclicBarrierTest do
       ) do
     # launch `parties` attendants
     1..parties
-    |> Enum.each(fn index ->
-      spawn_link(attendant_fn(self(), barrier, index, with_timeout, and_wait_thereafter))
-
+    |> Enum.map(fn index ->
+      pid = spawn(attendant_fn(self(), barrier, index, with_timeout, and_wait_thereafter))
       :timer.sleep(time_between_attendants_arriving)
+      pid
     end)
   end
 
@@ -252,6 +252,26 @@ defmodule SyncPrimitives.CyclicBarrierTest do
 
     assert attendant_end - attendant_start > timeout * 1_000_000,
            "barrier must have waited at least #{timeout} before timing out"
+
+    assert CyclicBarrier.alive?(barrier)
+    assert CyclicBarrier.broken?(barrier)
+
+    :ok = CyclicBarrier.stop(barrier)
+  end
+
+  test "cyclic barrier breaks when process gets killed" do
+    parties = 2
+
+    barrier = CyclicBarrier.start(parties)
+
+    attendant = start_attendants(barrier, 1, nil, 10_000) |> hd
+
+    Process.monitor(attendant)
+    Process.exit(attendant, :kill)
+
+    receive do
+      {:DOWN, _, :process, ^attendant, :killed} -> :ok
+    end
 
     assert CyclicBarrier.alive?(barrier)
     assert CyclicBarrier.broken?(barrier)
