@@ -90,6 +90,13 @@ defmodule SyncPrimitives.CyclicBarrier.Server do
   end
 
   @impl true
+  def handle_cast(:attendant_timedout, s = state(step: :waiting, q: q)) do
+    done(:broken, nil, q)
+
+    {:noreply, state(s, step: :broken, waiting: 0, q: :queue.new())}
+  end
+
+  @impl true
   def handle_info({:DOWN, _ref, :process, _pid, _exit_reason}, s = state(step: :waiting, q: q)) do
     done(:broken, nil, q)
 

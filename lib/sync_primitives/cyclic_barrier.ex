@@ -135,6 +135,7 @@ defmodule SyncPrimitives.CyclicBarrier do
       GenServer.call(pid, request, timeout)
     catch
       :exit, {:timeout, _} ->
+        GenServer.cast(pid, :attendant_timedout)
         :timeout
     end
   end
