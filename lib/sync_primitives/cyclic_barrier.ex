@@ -1,11 +1,11 @@
 defmodule SyncPrimitives.CyclicBarrier do
   @moduledoc """
-  A CyclicBarrier expects a predefined number of `parties` to _arrive_ at the
-  _barrier_.
+  A CyclicBarrier expects a predefined number of `parties` to `await/2`
+  before all calls to `await/2` can continue.
 
-  Parties _arrive_ at the _barrier_ by calling `await/1` or `await/2`.
+  Parties _arrive_ at the _barrier_ by calling `await/2`.
 
-  When all `parties` have _arrived_, all calls to `await/1` or `await/2`
+  When all `parties` have _arrived_, all calls to `await/2`
   unblock, and parties may proceed.
 
   Thereafter, the barrier resets (which is what makes it cyclic).
@@ -34,6 +34,7 @@ defmodule SyncPrimitives.CyclicBarrier do
       barrier action
       process 1, after wait
       process 2, after wait
+      iex> SyncPrimitives.CyclicBarrier.stop(barrier)
   """
 
   require Record

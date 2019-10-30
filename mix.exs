@@ -2,7 +2,7 @@ defmodule SyncPrimitives.MixProject do
   use Mix.Project
 
   @name :sync_primitives
-  @version "0.1.1"
+  @version "0.2.0"
   @maintainers ["Ian Atha <ian@atha.io>"]
   @github "https://github.com/ianatha/#{@name}"
   @source_url @github
