@@ -76,7 +76,7 @@ defmodule SyncPrimitives.CyclicBarrier do
       :waiting ->
         false
 
-      _ ->
+      :broken ->
         true
     end
   end
